@@ -82,7 +82,7 @@ If this value is null, there are no scope restrictions. If you provide scopes he
 *Default is false*   
 If this value is set to true, only offile ( server side tokens ) are allowed. Corresponds to `access_type` from the tokeninfo endpoint
 ### ExpieryWindowSeconds
-*Default is 10*
+*Default is 10*   
 Expire tokens before they really expire, you can set a window where the token is considered expired althogh it stil has some time left. 
 Usfull if for example the token expires in one second, but there is some processing in the api and when you eventually call google,
 the token is expired.
