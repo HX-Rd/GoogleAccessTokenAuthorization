@@ -9,7 +9,7 @@ namespace HXRd.Google.AccessTokenAuthorization
     {
         public bool UseMemoryCache { get; set; } = false;
         public int ExpieryWindowSeconds { get; set; } = 10;
-        public bool RequireCorrectClientId { get; set; } = true;
+        public bool RequireCorrectClientId { get; set; } = false;
         public string ClientId { get; set; }
         public List<string> RequiredScopes { get; set; }
         public bool RequireVerifiedEmail { get; set; } = true;

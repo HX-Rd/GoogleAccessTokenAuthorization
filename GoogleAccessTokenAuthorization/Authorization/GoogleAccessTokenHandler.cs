@@ -179,7 +179,7 @@ namespace HXRd.Google.AccessTokenAuthorization
             if (userInfo.Image != null)
             {
                 if (userInfo.Image.Url != null) claimList.Add(new Claim("image.url", userInfo.Image.Url));
-                if (userInfo.Image.IsDefault != null) claimList.Add(new Claim("image.url", userInfo.Image.IsDefault.ToString()));
+                if (userInfo.Image.IsDefault != null) claimList.Add(new Claim("image.isDefault", userInfo.Image.IsDefault.ToString()));
             }
             if (userInfo.Organizations != null)
             {
@@ -201,7 +201,7 @@ namespace HXRd.Google.AccessTokenAuthorization
                 for(int i = 0; i < userInfo.PlacesLived.Count; ++i)
                 {
                     if (userInfo.PlacesLived[i].Value != null) claimList.Add(new Claim($"placesLived{ i + 1 }", userInfo.PlacesLived[i].Value));
-                    if (userInfo.PlacesLived[i].Primary != null) claimList.Add(new Claim($"placesLived{ i + 1 }", userInfo.PlacesLived[i].Primary.ToString()));
+                    if (userInfo.PlacesLived[i].Primary != null) claimList.Add(new Claim($"placesLived{ i + 1 }.primary", userInfo.PlacesLived[i].Primary.ToString()));
                 }
             }
             if (userInfo.Cover != null)
