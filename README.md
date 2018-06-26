@@ -106,6 +106,63 @@ The included cache `IAuthenticationTicketCache` uses this implementation `Authen
 You can provide your own implementation of `IAuthenticationTicketCache` and bind it to the DI but to be honest if you need it,
 you have propably outgrown this extension and should propably be using Identity server instead.
 
+### Policies
+Is out of scope here to talk about policies but if you are new to netcore authentication/authorization ill add a simple example here how to create a policy that checks for an spesific email
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+    services.AddAuthentication(o =>
+    {
+        o.DefaultAuthenticateScheme = GoogleAccessTokenDefaults.GOOGLE_TOKEN_SCHEME;
+    })
+    .AddGoogleTokenAuthorization(
+        GoogleAccessTokenDefaults.GOOGLE_TOKEN_SCHEME,
+        GoogleAccessTokenDefaults.GOOGLE_TOKEN_SCHEME,
+        o => 
+        {
+            o.UseMemoryCache = true;
+            o.ClientId = "yourappid.apps.googleusercontent.com";
+            o.RequireVerifiedEmail = false;
+            o.RequireCorrectClientId = true;
+            o.ExpieryWindowSeconds = 20;
+            o.OnlyAllowOfflineTokens = true;
+            o.RequiredScopes = new List<string>
+            {
+                "https://www.googleapis.com/auth/plus.me",
+                "https://www.googleapis.com/auth/userinfo.email",
+                "https://www.googleapis.com/auth/userinfo.profile",
+                "https://www.googleapis.com/auth/plus.profile.agerange.read",
+                "https://www.googleapis.com/auth/plus.profile.language.read"
+            };
+        }
+    );
+    services.AddAuthorization(o =>
+    {
+        o.AddPolicy("IsSpecificEmail", policy =>
+            policy.RequireAssertion(context =>
+                context.User.HasClaim(c => (c.Type == "email" && c.Value == "youremail@gmail.com"))
+                )
+            );
+        });
+    }
+}
+```
+Now we have set up a policy that will only allow `youremail@gmail.com` to call the endpoint, lets add it to the endpoint
+```csharp
+[ApiController]
+public class ValuesController : ControllerBase
+{
+    [HttpGet]
+    [Authorize(Policy = "IsSpecificEmail", AuthenticationSchemes = GoogleAccessTokenDefaults.GOOGLE_TOKEN_SCHEME)]
+    public ActionResult<IEnumerable<string>> Get()
+    {
+        return new string[] { "value1", "value2" };
+    }
+}
+```
+For more information take a look at the documentation [here](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-2.1)
+
 ### Claims
 There are alot of claims set on the identity with this extension. They are obtained from google's tokeninfo and people endpoints I will just list theme here   
 Note that the <NUBMER> suffix indicades that there could be more than one and each entry will have a number counting from one.
